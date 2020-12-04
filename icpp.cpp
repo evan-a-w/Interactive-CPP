@@ -12,6 +12,7 @@ void process(string &str, string &prevCurr, string& curr, unsigned int &prevPos,
 
 int main(){
     cout << "Code is automatically in the main function except if \"def\" is the first word (followed by function definition). Undo will undo the last command but no more than that. Clear will reset everything." << endl;
+    cout << "If a variable name is written without a trailing semi-colon (;), cout will be applied to the variable but the underlying program will not be changed." << endl;
     unsigned int currPos;
     int currLevel = 1;
     bool putFile = true;
@@ -33,6 +34,7 @@ int main(){
     writeToFile(curr);
     currPos = curr.find("main(){") + 8;
     while(true){
+        bool noSemi = false;
         bool proc = true;
         string str;
         getline(cin, str);
@@ -107,13 +109,26 @@ int main(){
             currPos = curr.find("main(){") + 8;
         }
         else if(str == "exit") goto end;
-        if(proc) process(str, prevCurr, curr, prevPos, funcMode ? funcPos : currPos, currLevel);
-        skip:
-        if(putFile){
+        else if(str[str.length() - 1] != ';' && !funcMode){
+            proc = false;
+            noSemi = true;
+            str = "cout << " + str + " << endl;";
+            process(str, prevCurr, curr, prevPos, currPos, currLevel);
             writeToFile(curr);
             system("g++ -O0 program.cpp -o program");
             system("program.exe");
             system("del program.exe");
+            writeToFile(prevCurr);
+            curr = prevCurr;
+            currPos = prevPos;
+        }
+        if(proc) process(str, prevCurr, curr, prevPos, funcMode ? funcPos : currPos, currLevel);
+        skip:
+        if(putFile && !noSemi){
+            writeToFile(curr);
+            system("g++ -O0 program.cpp -o program");
+            system("program.exe");
+            system("del program.cpp");
         }
     }
     end:
