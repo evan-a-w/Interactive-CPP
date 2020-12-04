@@ -13,6 +13,7 @@ void process(string &str, string &prevCurr, string& curr, unsigned int &prevPos,
 int main(){
     cout << "Code is automatically in the main function except if \"def\" is the first word (followed by function definition). Undo will undo the last command but no more than that. Clear will reset everything." << endl;
     cout << "If a variable name is written without a trailing semi-colon (;), cout will be applied to the variable but the underlying program will not be changed." << endl;
+    cout << "Type \"cp\" or \"copy\" at any time to copy the generated file into the working directory." << endl;
     unsigned int currPos;
     int currLevel = 1;
     bool putFile = true;
@@ -21,7 +22,6 @@ int main(){
     int nonFuncPos;
     unsigned int prevPos;
     unsigned int funcPos;
-    string fileName = "transfer.txt";
     string prevCurr;
     string curr = "#include <iostream>\n"
                   "#include <vector>\n"
@@ -109,6 +109,14 @@ int main(){
             currPos = curr.find("main(){") + 8;
         }
         else if(str == "exit") goto end;
+        else if(str == "cp" || str == "copy"){
+            system("cd > tmpFile");
+            system("set /p var= < tmpFile");
+            system("del tmpFile");
+            system("copy program.cpp %var%");
+            proc = false;
+            noSemi = true;
+        }
         else if(str[str.length() - 1] != ';' && !funcMode){
             proc = false;
             noSemi = true;
@@ -128,7 +136,7 @@ int main(){
             writeToFile(curr);
             system("g++ -O0 program.cpp -o program");
             system("program.exe");
-            system("del program.cpp");
+            system("del program.exe");
         }
     }
     end:
