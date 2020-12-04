@@ -22,6 +22,7 @@ int main(){
     int nonFuncPos;
     unsigned int prevPos;
     unsigned int funcPos;
+    bool save = false;
     string prevCurr;
     string curr = "#include <iostream>\n"
                   "#include <vector>\n"
@@ -110,10 +111,7 @@ int main(){
         }
         else if(str == "exit") goto end;
         else if(str == "cp" || str == "copy"){
-            system("cd > tmpFile");
-            system("set /p var= < tmpFile");
-            system("del tmpFile");
-            system("copy program.cpp %var%");
+            save = true;
             proc = false;
             noSemi = true;
         }
@@ -140,7 +138,7 @@ int main(){
         }
     }
     end:
-    system("del program.cpp");
+    if(!save) system("del program.cpp");
     return 0;
 }
 
